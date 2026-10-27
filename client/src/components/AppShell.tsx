@@ -13,6 +13,7 @@ import {
   LayoutDashboard,
   Menu,
   Leaf,
+  MapPinned,
   Settings as SettingsIcon,
   Sparkles,
   X
@@ -29,6 +30,7 @@ import { CommandPalette } from './CommandPalette';
 const ICONS = {
   overview: LayoutDashboard,
   catalog: Globe2,
+  observations: MapPinned,
   simulator: FlaskConical,
   projects: FolderKanban,
   assistant: Sparkles,
@@ -38,6 +40,7 @@ const ICONS = {
 const PATH_TITLES: Record<string, string> = {
   '/': 'Overview',
   '/catalog': PRODUCT.catalogueName,
+  '/observations': 'Species occurrence search',
   '/simulator': 'Simulation lab',
   '/workspaces': 'Field plans',
   '/assistant': PRODUCT.assistantNameTitle,

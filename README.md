@@ -1,6 +1,6 @@
 # BioSphere
 
-> **Deterministic living-planet simulator — from genome to ecosystem.**
+> **Conservation research workbench for searching georeferenced GBIF occurrence records.**
 
 [![CI](https://github.com/shivang-jindal/BioSphere/actions/workflows/ci.yml/badge.svg)](https://github.com/shivang-jindal/BioSphere/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -31,6 +31,12 @@ The repository is a complete open-source product:
 BioSphere supports scenario comparison for conservation planning. Create a named field plan with a seed and assumptions, run habitat or climate interventions under that seed, and retain/export the modeled report. The bundled species catalogue and simulated outcomes are illustrative; they are not current field observations, population estimates, or conservation recommendations validated by ecologists. Studies are stored in `.data/workspaces.json` (override with `WORKSPACE_FILE`) on the server installation. This file is single-installation storage, not accounts or cloud collaboration.
 
 ---
+
+## Current implementation and limits
+
+The GBIF Observations workflow resolves a scientific name and searches up to 100 coordinate-bearing occurrence records in a supplied bounding box and optional year range. Results retain record dates, coordinates, basis of record, dataset identifiers, and source/citation links. GBIF occurrences are records of reported observations, not a census, abundance estimate, or evidence of absence. Sampling effort, taxonomic coverage, and georeferencing vary. The bundled species atlas and intervention simulations are illustrative, not current field data or validated conservation recommendations.
+
+Some sections below describe the original product vision and aspirational capabilities. They are not a claim that those functions are implemented. See [SPEC.md](SPEC.md) for the vision and this section for present behavior.
 
 ## Features
 

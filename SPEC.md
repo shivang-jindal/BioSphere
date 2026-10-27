@@ -1,5 +1,7 @@
 # 🌿 BIOSPHERE — The Living Planet Simulator
 
+> **Implementation status:** This is an aspirational vision document, not a statement of implemented capability. The current live-data workflow searches [GBIF occurrence records](https://techdocs.gbif.org/en/openapi/v1/occurrence) for a resolved taxon and bounded area. Occurrences are presence records with uneven sampling, not population counts, a census, or evidence of absence. The bundled species data and intervention simulations are illustrative.
+
 > **A real-time biosphere simulator. Every tracked species, every migration, every birth and death, every predator-prey dance, every extinction risk. The planet's pulse in your hands.**
 
 ---

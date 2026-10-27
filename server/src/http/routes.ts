@@ -11,6 +11,7 @@ import {
 
 import { asyncHandler, validateBody, validateQuery } from './middleware.js';
 import { workspaceStore } from '../store/workspaceStore.js';
+import { searchOccurrences } from '../providers/gbif.js';
 import {
   analyticsSummary,
   capabilities,
@@ -51,6 +52,13 @@ apiRouter.get('/v1/catalog/:id', (req, res, next) => {
 apiRouter.get('/v1/analytics/summary', (_req, res) => {
   res.json(analyticsSummary());
 });
+
+const occurrenceInput = z.object({ name: z.string().trim().min(2).max(120), minLatitude: z.number().min(-90).max(90), maxLatitude: z.number().min(-90).max(90), minLongitude: z.number().min(-180).max(180), maxLongitude: z.number().min(-180).max(180), yearFrom: z.number().int().min(1800).max(new Date().getUTCFullYear()).optional(), yearTo: z.number().int().min(1800).max(new Date().getUTCFullYear()).optional(), projectId: z.string().uuid().optional() }).refine((value) => value.minLatitude < value.maxLatitude && value.minLongitude < value.maxLongitude && (value.yearFrom === undefined || value.yearTo === undefined || value.yearFrom <= value.yearTo), 'Bounds and year range must be ordered.');
+apiRouter.post('/v1/observations/search', validateBody(occurrenceInput), asyncHandler(async (req, res) => {
+  const { projectId, ...input } = req.body; const result = await searchOccurrences(input);
+  if (projectId) await workspaceStore.addRun(projectId, `GBIF occurrences: ${result.taxon.scientificName}`, result);
+  res.status(201).json({ result, saved: Boolean(projectId) });
+}));
 
 const projectInput = z.object({
   name: z.string().trim().min(1).max(100),
