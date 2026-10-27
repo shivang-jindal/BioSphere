@@ -26,6 +26,10 @@ The repository is a complete open-source product:
 - **Shared** — one Zod schema and constant catalogue for runtime and types
 - **Engine** — pure functions, no database required, fully reproducible
 
+## Conservation field plans
+
+BioSphere supports scenario comparison for conservation planning. Create a named field plan with a seed and assumptions, run habitat or climate interventions under that seed, and retain/export the modeled report. The bundled species catalogue and simulated outcomes are illustrative; they are not current field observations, population estimates, or conservation recommendations validated by ecologists. Studies are stored in `.data/workspaces.json` (override with `WORKSPACE_FILE`) on the server installation. This file is single-installation storage, not accounts or cloud collaboration.
+
 ---
 
 ## Features
