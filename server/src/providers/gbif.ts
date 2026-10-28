@@ -12,7 +12,7 @@ async function getJson(url: URL): Promise<unknown> {
   if (raw.length > 4_000_000) throw Object.assign(new Error('GBIF response exceeded the 4 MB safety limit.'), { statusCode: 502, code: 'GBIF_RESPONSE_TOO_LARGE' });
   try { return JSON.parse(raw) as unknown; } catch { throw Object.assign(new Error('GBIF returned invalid JSON.'), { statusCode: 502, code: 'GBIF_INVALID_RESPONSE' }); }
 }
-export async function searchOccurrences(input: { name: string; minLatitude: number; maxLatitude: number; minLongitude: number; maxLongitude: number; yearFrom?: number; yearTo?: number }) {
+export async function searchOccurrences(input: { name: string; minLatitude: number; maxLatitude: number; minLongitude: number; maxLongitude: number; yearFrom?: number; yearTo?: number; offset?: number }) {
   const taxonUrl = new URL(`${root}/species/match`); taxonUrl.searchParams.set('name', input.name); taxonUrl.searchParams.set('verbose', 'false');
   const taxon = taxonSchema.safeParse(await getJson(taxonUrl));
   if (!taxon.success || !taxon.data.usageKey) throw Object.assign(new Error('GBIF could not resolve that scientific name to a usable taxon.'), { statusCode: 404, code: 'GBIF_TAXON_NOT_FOUND' });
@@ -22,10 +22,11 @@ export async function searchOccurrences(input: { name: string; minLatitude: numb
   if (input.yearFrom !== undefined || input.yearTo !== undefined) {
     url.searchParams.set('year', `${input.yearFrom ?? 1800},${input.yearTo ?? new Date().getUTCFullYear()}`);
   }
-  url.searchParams.set('limit', '100'); url.searchParams.set('offset', '0');
+  const offset = input.offset ?? 0;
+  url.searchParams.set('limit', '100'); url.searchParams.set('offset', String(offset));
   const result = occurrenceSchema.safeParse(await getJson(url));
   if (!result.success) throw Object.assign(new Error('GBIF occurrence response did not match the expected format.'), { statusCode: 502, code: 'GBIF_INVALID_RESPONSE' });
-  return { query: input, taxon: { key: taxon.data.usageKey, scientificName: taxon.data.scientificName ?? input.name, rank: taxon.data.rank ?? 'unknown' }, total: result.data.count, returned: result.data.results.length, fetchedAt: new Date().toISOString(),
+  return { query: input, taxon: { key: taxon.data.usageKey, scientificName: taxon.data.scientificName ?? input.name, rank: taxon.data.rank ?? 'unknown' }, total: result.data.count, offset, limit: 100, returned: result.data.results.length, fetchedAt: new Date().toISOString(),
     records: result.data.results.map((row) => ({ id: row.gbifID ?? String(row.key ?? ''), scientificName: row.scientificName ?? taxon.data.scientificName ?? input.name, eventDate: row.eventDate ?? null, year: row.year ?? null, latitude: row.decimalLatitude ?? null, longitude: row.decimalLongitude ?? null, basisOfRecord: row.basisOfRecord ?? 'unknown', datasetKey: row.datasetKey ?? null, datasetName: row.datasetName ?? null, issues: row.issues ?? [] })),
     source: { name: 'GBIF Occurrence API', url: url.toString(), docs: 'https://techdocs.gbif.org/en/openapi/v1/occurrence', citation: 'https://www.gbif.org/citation-guidelines' }, interpretation: 'These are digitized occurrence records, not a census, abundance estimate, or evidence that a species is absent where no record appears. Sampling effort, reporting, georeferencing, and taxonomic coverage vary.' };
 }
