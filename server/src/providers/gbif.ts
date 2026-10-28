@@ -19,7 +19,9 @@ export async function searchOccurrences(input: { name: string; minLatitude: numb
   const url = new URL(`${root}/occurrence/search`);
   url.searchParams.set('taxonKey', String(taxon.data.usageKey)); url.searchParams.set('hasCoordinate', 'true');
   url.searchParams.set('decimalLatitude', `${input.minLatitude},${input.maxLatitude}`); url.searchParams.set('decimalLongitude', `${input.minLongitude},${input.maxLongitude}`);
-  if (input.yearFrom !== undefined) url.searchParams.set('year', `${input.yearFrom},${input.yearTo ?? input.yearFrom}`);
+  if (input.yearFrom !== undefined || input.yearTo !== undefined) {
+    url.searchParams.set('year', `${input.yearFrom ?? 1800},${input.yearTo ?? new Date().getUTCFullYear()}`);
+  }
   url.searchParams.set('limit', '100'); url.searchParams.set('offset', '0');
   const result = occurrenceSchema.safeParse(await getJson(url));
   if (!result.success) throw Object.assign(new Error('GBIF occurrence response did not match the expected format.'), { statusCode: 502, code: 'GBIF_INVALID_RESPONSE' });
